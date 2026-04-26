@@ -1,0 +1,159 @@
+<div class="p-8 max-w-4xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <LinkTo @route="crm.events" class="hover:text-indigo-600">Events</LinkTo>
+        <span>/</span>
+        <span class="text-gray-900 dark:text-white">{{@event.name}}</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{@event.name}}</h1>
+      <div class="flex items-center gap-3 mt-1">
+        <Crm::Ui::StatusBadge @colorClass={{@event.statusColor}} @label={{@event.status}} />
+        <span class="text-sm text-gray-500 capitalize">{{@event.eventType}}</span>
+        {{#if @event.eventDate}}
+          <span class="text-sm text-gray-500">{{date-format @event.eventDate format="PPP"}}</span>
+        {{/if}}
+      </div>
+    </div>
+    <LinkTo @route="crm.events.edit" @model={{@event.id}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+      Edit
+    </LinkTo>
+  </div>
+
+  <div class="grid grid-cols-4 gap-4 mb-8">
+    <Crm::Ui::StatCard @label="Budget" @value={{if @event.budget (format-currency @event.budget) "—"}} @color="blue" />
+    <Crm::Ui::StatCard @label="Total Expenses" @value={{format-currency @event.totalExpensesCents}} @color="yellow" />
+    <Crm::Ui::StatCard @label="Vendors" @value={{this.assignedVendors.length}} @color="gray" />
+    <Crm::Ui::StatCard @label="Guests" @value={{or @event.guestCount "—"}} @color="gray" />
+  </div>
+
+  {{! Ticket sales (if integration linked) }}
+  {{#if this.ticketingEvent}}
+    <div class="mb-6 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-blue-900 dark:text-blue-100">Ticket Sales — {{this.ticketingEvent.platform}}</h3>
+        {{#if this.ticketingEvent.platformUrl}}
+          <a href={{this.ticketingEvent.platformUrl}} target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-700">View on platform →</a>
+        {{/if}}
+      </div>
+      <div class="mt-2 grid grid-cols-2 gap-4 text-sm">
+        <div><span class="text-blue-600 font-medium">Tickets Sold:</span> <span class="text-blue-900 dark:text-blue-100">{{this.ticketingEvent.ticketsSold}}</span></div>
+        <div><span class="text-blue-600 font-medium">Gross Revenue:</span> <span class="text-blue-900 dark:text-blue-100">{{format-currency this.ticketingEvent.grossRevenueCents}}</span></div>
+      </div>
+    </div>
+  {{/if}}
+
+  <div class="grid grid-cols-2 gap-6">
+    {{! Details }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Details</h3>
+      <dl class="space-y-2 text-sm">
+        {{#if @event.venue}}
+          <div class="flex gap-2"><dt class="text-gray-500 w-20">Venue</dt><dd class="text-gray-900 dark:text-white">{{@event.venue}}</dd></div>
+        {{/if}}
+        {{#if @event.client.id}}
+          <div class="flex gap-2"><dt class="text-gray-500 w-20">Client</dt>
+            <dd><LinkTo @route="crm.clients.show" @model={{@event.client.id}} class="text-indigo-600 hover:text-indigo-700">{{@event.client.fullName}}</LinkTo></dd>
+          </div>
+        {{/if}}
+        {{#if @event.notes}}
+          <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+            <dt class="text-gray-500 mb-1">Notes</dt><dd class="text-gray-900 dark:text-white">{{@event.notes}}</dd>
+          </div>
+        {{/if}}
+      </dl>
+    </div>
+
+    {{! Assigned Vendors }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Vendors & DJs</h3>
+      {{#if this.assignedVendors.length}}
+        <ul class="space-y-2">
+          {{#each this.assignedVendors as |vendor|}}
+            <li class="text-sm flex items-center justify-between">
+              <LinkTo @route="crm.vendors.show" @model={{vendor.id}} class="text-indigo-600 hover:text-indigo-700">{{vendor.name}}</LinkTo>
+              <span class="text-gray-400 text-xs">{{vendor.serviceTypeLabel}}</span>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400">No vendors assigned</p>
+      {{/if}}
+    </div>
+  </div>
+
+  {{! Expenses }}
+  <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-gray-900 dark:text-white">Expenses</h3>
+      <LinkTo @route="crm.expenses.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ Add</LinkTo>
+    </div>
+    {{#if @event.expenses.length}}
+      <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+        {{#each @event.expenses as |expense|}}
+          <li class="py-2 flex items-center justify-between text-sm">
+            <span class="text-gray-900 dark:text-white">{{expense.description}}</span>
+            <div class="flex items-center gap-3">
+              <span class="text-gray-400 text-xs">{{expense.categoryLabel}}</span>
+              <span class="font-medium text-gray-900 dark:text-white">{{format-currency expense.amount}}</span>
+              {{#if expense.isPaid}}
+                <span class="text-xs text-green-600">Paid</span>
+              {{else}}
+                <span class="text-xs text-yellow-600">Unpaid</span>
+              {{/if}}
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+      <div class="pt-2 mt-2 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+        <span class="text-sm font-semibold text-gray-900 dark:text-white">Total: {{format-currency @event.totalExpensesCents}}</span>
+      </div>
+    {{else}}
+      <p class="text-sm text-gray-400">No expenses logged</p>
+    {{/if}}
+  </div>
+
+  {{! Invoices & Contracts }}
+  <div class="mt-6 grid grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Invoices</h3>
+        <LinkTo @route="crm.invoices.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ Add</LinkTo>
+      </div>
+      {{#if @event.invoices.length}}
+        <ul class="space-y-1">
+          {{#each @event.invoices as |inv|}}
+            <li class="text-sm flex items-center justify-between">
+              <LinkTo @route="crm.invoices.show" @model={{inv.id}} class="text-indigo-600 hover:text-indigo-700">{{inv.invoiceNumber}}</LinkTo>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">{{format-currency inv.total}}</span>
+                <Crm::Ui::StatusBadge @colorClass={{inv.statusColor}} @label={{inv.status}} />
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400">No invoices</p>
+      {{/if}}
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Contracts</h3>
+        <LinkTo @route="crm.contracts.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ Add</LinkTo>
+      </div>
+      {{#if @event.contracts.length}}
+        <ul class="space-y-1">
+          {{#each @event.contracts as |contract|}}
+            <li class="text-sm flex items-center justify-between">
+              <LinkTo @route="crm.contracts.show" @model={{contract.id}} class="text-indigo-600 hover:text-indigo-700">{{contract.title}}</LinkTo>
+              <Crm::Ui::StatusBadge @colorClass={{contract.statusColor}} @label={{contract.status}} />
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400">No contracts</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

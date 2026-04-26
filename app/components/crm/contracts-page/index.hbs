@@ -1,0 +1,79 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Contracts">
+    <:action>
+      <LinkTo @route="crm.contracts.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        + New Contract
+      </LinkTo>
+    </:action>
+  </Crm::Ui::SectionHeader>
+
+  <div class="flex gap-3 mb-4">
+    <select value={{this.statusFilter}} {{on "change" (fn (mut this.statusFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Statuses</option>
+      <option value="draft">Draft</option>
+      <option value="sent">Sent</option>
+      <option value="signed">Signed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <select value={{this.typeFilter}} {{on "change" (fn (mut this.typeFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Types</option>
+      <option value="vendor">Vendor</option>
+      <option value="client">Client</option>
+      <option value="venue">Venue</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  {{#if this.filteredContracts.length}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          {{#each this.filteredContracts as |contract|}}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <td class="px-6 py-4">
+                <LinkTo @route="crm.contracts.show" @model={{contract.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                  {{contract.title}}
+                </LinkTo>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 capitalize">{{contract.contractTypeLabel}}</td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                {{#if contract.event.id}}
+                  <LinkTo @route="crm.events.show" @model={{contract.event.id}} class="text-indigo-600 hover:text-indigo-700">{{contract.event.name}}</LinkTo>
+                {{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4">
+                <Crm::Ui::StatusBadge @colorClass={{contract.statusColor}} @label={{contract.status}} />
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-400">
+                {{#if contract.createdAt}}{{date-format contract.createdAt format="PP"}}{{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <LinkTo @route="crm.contracts.edit" @model={{contract.id}} class="text-gray-400 hover:text-indigo-600">Edit</LinkTo>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <Crm::Ui::EmptyState @title="No contracts yet" @description="Create contracts for DJs, vendors, and clients with your company logo.">
+      <:action>
+        <LinkTo @route="crm.contracts.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+          + New Contract
+        </LinkTo>
+      </:action>
+    </Crm::Ui::EmptyState>
+  {{/if}}
+</div>

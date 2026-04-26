@@ -1,0 +1,103 @@
+<div class="p-8 max-w-2xl">
+  <Crm::Ui::SectionHeader @title={{if @isNew "New Event" "Edit Event"}} />
+
+  <form {{on "submit" this.handleSave}} class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-5">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Name *</label>
+      <input type="text" value={{@event.name}} {{on "input" (fn (mut @event.name) value="target.value")}} required
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Type</label>
+        <select value={{@event.eventType}} {{on "change" (fn (mut @event.eventType) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="wedding">Wedding</option>
+          <option value="corporate">Corporate</option>
+          <option value="birthday">Birthday</option>
+          <option value="party">Party</option>
+          <option value="concert">Concert</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+        <select value={{@event.status}} {{on "change" (fn (mut @event.status) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="enquiry">Enquiry</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Date</label>
+        <input type="date" value={{this.eventDateString}} {{on "change" this.handleDateChange}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guest Count</label>
+        <input type="number" value={{@event.guestCount}} {{on "input" (fn (mut @event.guestCount) value="target.valueAsNumber")}} min="0"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue</label>
+        <input type="text" value={{@event.venue}} {{on "input" (fn (mut @event.venue) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Budget ($)</label>
+        <input type="number" value={{this.budgetInDollars}} {{on "change" this.handleBudgetChange}} min="0" step="0.01"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+    </div>
+
+    {{#if this.allVendors.length}}
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Assigned Vendors / DJs</label>
+        <div class="space-y-2 max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md p-3">
+          {{#each this.allVendors as |vendor|}}
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox"
+                checked={{this.isVendorSelected vendor.id}}
+                {{on "change" (fn this.toggleVendor vendor.id)}}
+                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+              <span class="text-gray-900 dark:text-white">{{vendor.name}}</span>
+              <span class="text-gray-400 text-xs">({{vendor.serviceTypeLabel}})</span>
+            </label>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+      <textarea value={{@event.notes}} {{on "input" (fn (mut @event.notes) value="target.value")}} rows="3"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+    </div>
+
+    <div class="flex items-center justify-between pt-2">
+      <div class="flex gap-3">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+          {{if @isNew "Create Event" "Save Changes"}}
+        </button>
+        <button type="button" {{on "click" this.handleCancel}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          Cancel
+        </button>
+      </div>
+      {{#unless @isNew}}
+        <button type="button" {{on "click" this.handleDelete}} class="px-4 py-2 text-red-600 text-sm font-medium hover:text-red-700">
+          Delete Event
+        </button>
+      {{/unless}}
+    </div>
+  </form>
+</div>

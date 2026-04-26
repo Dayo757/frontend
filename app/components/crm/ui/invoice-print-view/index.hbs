@@ -1,0 +1,61 @@
+{{! Screen: print button only }}
+<button type="button" {{on "click" this.handlePrint}} class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors print:hidden">
+  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+  Print / Save PDF
+</button>
+
+{{! Print-only invoice layout }}
+<div class="hidden print:block bg-white p-0 text-gray-900" style="font-family: sans-serif;">
+  <Crm::Ui::PrintableHeader @documentTitle="INVOICE" @documentNumber={{@invoice.invoiceNumber}} />
+
+  <div class="grid grid-cols-2 gap-8 mb-8 text-sm">
+    <div>
+      {{#if @invoice.client.id}}
+        <p class="font-semibold text-gray-700 mb-1">Bill To:</p>
+        <p class="font-medium">{{@invoice.client.fullName}}</p>
+        {{#if @invoice.client.company}}<p>{{@invoice.client.company}}</p>{{/if}}
+        {{#if @invoice.client.email}}<p>{{@invoice.client.email}}</p>{{/if}}
+        {{#if @invoice.client.address}}<p>{{@invoice.client.address}}</p>{{/if}}
+      {{/if}}
+    </div>
+    <div class="text-right text-sm">
+      {{#if @invoice.issueDate}}<p><span class="text-gray-500">Issue Date:</span> {{date-format @invoice.issueDate format="PP"}}</p>{{/if}}
+      {{#if @invoice.dueDate}}<p><span class="text-gray-500">Due Date:</span> {{date-format @invoice.dueDate format="PP"}}</p>{{/if}}
+      {{#if @invoice.event.id}}<p><span class="text-gray-500">Event:</span> {{@invoice.event.name}}</p>{{/if}}
+    </div>
+  </div>
+
+  <table style="width:100%; border-collapse:collapse; font-size:0.875rem; margin-bottom:1.5rem;">
+    <thead>
+      <tr style="border-bottom:2px solid #e5e7eb; background:#f9fafb;">
+        <th style="padding:0.75rem; text-align:left; font-weight:600; color:#374151;">Description</th>
+        <th style="padding:0.75rem; text-align:center; font-weight:600; color:#374151; width:80px;">Qty</th>
+        <th style="padding:0.75rem; text-align:right; font-weight:600; color:#374151; width:120px;">Unit Price</th>
+        <th style="padding:0.75rem; text-align:right; font-weight:600; color:#374151; width:120px;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each @invoice.lineItems as |item|}}
+        <tr style="border-bottom:1px solid #f3f4f6;">
+          <td style="padding:0.75rem;">{{item.description}}</td>
+          <td style="padding:0.75rem; text-align:center;">{{item.quantity}}</td>
+          <td style="padding:0.75rem; text-align:right;">{{format-currency item.unitPrice}}</td>
+          <td style="padding:0.75rem; text-align:right; font-weight:500;">{{format-currency item.lineTotal}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" style="padding:0.5rem 0.75rem; text-align:right; color:#6b7280;">Subtotal</td><td style="padding:0.5rem 0.75rem; text-align:right;">{{format-currency @invoice.subtotal}}</td></tr>
+      {{#if @invoice.taxRate}}<tr><td colspan="3" style="padding:0.5rem 0.75rem; text-align:right; color:#6b7280;">Tax ({{@invoice.taxRate}}%)</td><td style="padding:0.5rem 0.75rem; text-align:right;">{{format-currency @invoice.taxAmount}}</td></tr>{{/if}}
+      {{#if @invoice.discountAmount}}<tr><td colspan="3" style="padding:0.5rem 0.75rem; text-align:right; color:#6b7280;">Discount</td><td style="padding:0.5rem 0.75rem; text-align:right; color:#dc2626;">-{{format-currency @invoice.discountAmount}}</td></tr>{{/if}}
+      <tr style="border-top:2px solid #e5e7eb;"><td colspan="3" style="padding:0.75rem; text-align:right; font-weight:700; font-size:1rem;">Total</td><td style="padding:0.75rem; text-align:right; font-weight:700; font-size:1rem;">{{format-currency @invoice.total}}</td></tr>
+    </tfoot>
+  </table>
+
+  {{#if @invoice.notes}}
+    <div style="font-size:0.875rem; color:#4b5563; border-top:1px solid #e5e7eb; padding-top:1rem;">
+      <p style="font-weight:600; margin-bottom:0.25rem;">Notes / Payment Terms:</p>
+      <p>{{@invoice.notes}}</p>
+    </div>
+  {{/if}}
+</div>

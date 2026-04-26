@@ -1,0 +1,67 @@
+<div class="p-8 max-w-3xl">
+  <Crm::Ui::SectionHeader @title="Ticketing Integrations" />
+  <p class="text-sm text-gray-500 -mt-4 mb-6">Connect ticket platforms to import event data and sync ticket sales.</p>
+
+  <div class="bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700 rounded-lg p-4 mb-6 text-sm text-amber-800 dark:text-amber-200">
+    <strong>Note:</strong> Syncing requires a backend proxy (API calls from the browser are blocked by CORS). Once your backend is set up, syncing will work automatically. You can still save API keys now.
+  </div>
+
+  <div class="space-y-4">
+    {{#each this.platforms as |platform|}}
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white">{{platform.label}}</h3>
+            <p class="text-sm text-gray-500 mt-0.5">{{platform.description}}</p>
+            {{#if platform.integration}}
+              <div class="mt-2 text-xs text-gray-400">
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full {{if (eq platform.integration.status "connected") "bg-green-400" "bg-red-400"}}"></span>
+                  {{platform.integration.status}}
+                  · API key: {{platform.integration.maskedApiKey}}
+                </span>
+                {{#if platform.integration.lastSyncedAt}}
+                  <span class="ml-2">· Last synced: {{date-format platform.integration.lastSyncedAt format="PPp"}}</span>
+                {{/if}}
+                {{#if platform.integration.lastError}}
+                  <p class="text-red-500 mt-1">Error: {{platform.integration.lastError}}</p>
+                {{/if}}
+              </div>
+            {{/if}}
+          </div>
+
+          <div class="flex gap-2">
+            {{#if platform.integration}}
+              {{#if (or (eq platform.value "dice") (eq platform.value "eventbrite"))}}
+                <button type="button" {{on "click" (fn this.syncPlatform platform.integration)}}
+                  disabled={{this.crmTicketing.isSyncing}}
+                  class="px-3 py-1.5 text-sm text-blue-600 border border-blue-300 rounded-md hover:bg-blue-50 disabled:opacity-50">
+                  {{if this.crmTicketing.isSyncing "Syncing..." "Sync Now"}}
+                </button>
+              {{/if}}
+              <button type="button" {{on "click" (fn this.startConnect platform.value)}} class="px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+                Update Key
+              </button>
+              <button type="button" {{on "click" (fn this.disconnectPlatform platform.integration)}} class="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-md hover:bg-red-50">
+                Disconnect
+              </button>
+            {{else}}
+              <button type="button" {{on "click" (fn this.startConnect platform.value)}} class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                Connect
+              </button>
+            {{/if}}
+          </div>
+        </div>
+
+        {{#if (eq this.addingPlatform platform.value)}}
+          <form {{on "submit" this.saveIntegration}} class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex gap-3">
+            <input type="text" placeholder="Paste your API key" value={{this.newApiKey}} {{on "input" (fn (mut this.newApiKey) value="target.value")}} required
+              class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="submit" class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
+            <button type="button" {{on "click" this.cancelConnect}} class="px-3 py-1.5 text-sm border border-gray-300 text-gray-600 rounded-md hover:bg-gray-50">Cancel</button>
+          </form>
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+</div>

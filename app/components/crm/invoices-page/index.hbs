@@ -1,0 +1,84 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Invoices">
+    <:action>
+      <LinkTo @route="crm.invoices.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        + New Invoice
+      </LinkTo>
+    </:action>
+  </Crm::Ui::SectionHeader>
+
+  <div class="mb-4">
+    <select value={{this.statusFilter}} {{on "change" (fn (mut this.statusFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Statuses</option>
+      <option value="draft">Draft</option>
+      <option value="sent">Sent</option>
+      <option value="paid">Paid</option>
+      <option value="overdue">Overdue</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+
+  {{#if this.filteredInvoices.length}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          {{#each this.filteredInvoices as |inv|}}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <LinkTo @route="crm.invoices.show" @model={{inv.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                  {{inv.invoiceNumber}}
+                </LinkTo>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                {{#if inv.client.id}}
+                  <LinkTo @route="crm.clients.show" @model={{inv.client.id}} class="text-indigo-600 hover:text-indigo-700">{{inv.client.fullName}}</LinkTo>
+                {{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                {{#if inv.event.id}}
+                  <LinkTo @route="crm.events.show" @model={{inv.event.id}} class="text-indigo-600 hover:text-indigo-700">{{inv.event.name}}</LinkTo>
+                {{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{#if inv.issueDate}}{{date-format inv.issueDate format="PP"}}{{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm {{if inv.isOverdue "text-red-600 font-medium" "text-gray-600 dark:text-gray-300"}}">
+                {{#if inv.dueDate}}{{date-format inv.dueDate format="PP"}}{{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white text-right">
+                {{format-currency inv.total}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <Crm::Ui::StatusBadge @colorClass={{inv.statusColor}} @label={{inv.status}} />
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <LinkTo @route="crm.invoices.edit" @model={{inv.id}} class="text-gray-400 hover:text-indigo-600 mr-3">Edit</LinkTo>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <Crm::Ui::EmptyState @title="No invoices yet" @description="Create professional invoices for your clients.">
+      <:action>
+        <LinkTo @route="crm.invoices.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+          + New Invoice
+        </LinkTo>
+      </:action>
+    </Crm::Ui::EmptyState>
+  {{/if}}
+</div>

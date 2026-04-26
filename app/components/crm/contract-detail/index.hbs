@@ -1,0 +1,42 @@
+<div class="p-8 max-w-3xl">
+  <div class="flex items-center justify-between mb-6 print:hidden">
+    <div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <LinkTo @route="crm.contracts" class="hover:text-indigo-600">Contracts</LinkTo>
+        <span>/</span>
+        <span class="text-gray-900 dark:text-white">{{@contract.title}}</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{@contract.title}}</h1>
+        <Crm::Ui::StatusBadge @colorClass={{@contract.statusColor}} @label={{@contract.status}} />
+      </div>
+    </div>
+    <div class="flex gap-2">
+      {{#if (eq @contract.status "draft")}}
+        <button type="button" {{on "click" this.markSent}} class="px-3 py-1.5 text-sm text-blue-600 border border-blue-300 rounded-md hover:bg-blue-50">Mark Sent</button>
+      {{/if}}
+      {{#if (eq @contract.status "sent")}}
+        <button type="button" {{on "click" this.markSigned}} class="px-3 py-1.5 text-sm text-green-700 border border-green-300 rounded-md hover:bg-green-50">Mark Signed</button>
+      {{/if}}
+      <Crm::Ui::ContractPrintView @contract={{@contract}} />
+      <LinkTo @route="crm.contracts.edit" @model={{@contract.id}} class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">Edit</LinkTo>
+      <button type="button" {{on "click" this.handleDelete}} class="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-md hover:bg-red-50">Delete</button>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6 print:hidden">
+    <div class="grid grid-cols-3 gap-4 text-sm">
+      <div><span class="text-gray-500">Type:</span> <span class="text-gray-900 dark:text-white capitalize">{{@contract.contractTypeLabel}}</span></div>
+      {{#if @contract.client.id}}<div><span class="text-gray-500">Client:</span> <LinkTo @route="crm.clients.show" @model={{@contract.client.id}} class="text-indigo-600">{{@contract.client.fullName}}</LinkTo></div>{{/if}}
+      {{#if @contract.vendor.id}}<div><span class="text-gray-500">Vendor:</span> <LinkTo @route="crm.vendors.show" @model={{@contract.vendor.id}} class="text-indigo-600">{{@contract.vendor.name}}</LinkTo></div>{{/if}}
+      {{#if @contract.event.id}}<div><span class="text-gray-500">Event:</span> <LinkTo @route="crm.events.show" @model={{@contract.event.id}} class="text-indigo-600">{{@contract.event.name}}</LinkTo></div>{{/if}}
+      {{#if @contract.signedAt}}<div><span class="text-gray-500">Signed:</span> <span class="text-green-600">{{date-format @contract.signedAt format="PP"}}</span></div>{{/if}}
+    </div>
+  </div>
+
+  {{#if @contract.content}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 prose prose-sm dark:prose-invert max-w-none print:hidden">
+      {{markdown-to-html @contract.content}}
+    </div>
+  {{/if}}
+</div>

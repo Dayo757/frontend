@@ -1,0 +1,88 @@
+<div class="p-8 max-w-4xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <LinkTo @route="crm.clients" class="hover:text-indigo-600">Clients</LinkTo>
+        <span>/</span>
+        <span class="text-gray-900 dark:text-white">{{@client.fullName}}</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{@client.fullName}}</h1>
+      {{#if @client.company}}
+        <p class="text-gray-500 text-sm">{{@client.company}}</p>
+      {{/if}}
+    </div>
+    <LinkTo @route="crm.clients.edit" @model={{@client.id}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+      Edit
+    </LinkTo>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4 mb-8">
+    <Crm::Ui::StatCard @label="Total Revenue" @value={{format-currency @client.totalRevenueCents}} @color="green" />
+    <Crm::Ui::StatCard @label="Events" @value={{@client.events.length}} @color="blue" />
+    <Crm::Ui::StatCard @label="Invoices" @value={{@client.invoices.length}} @color="gray" />
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    {{! Contact info }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Contact Info</h3>
+      <dl class="space-y-2 text-sm">
+        {{#if @client.email}}
+          <div class="flex gap-2"><dt class="text-gray-500 w-16">Email</dt><dd class="text-gray-900 dark:text-white">{{@client.email}}</dd></div>
+        {{/if}}
+        {{#if @client.phone}}
+          <div class="flex gap-2"><dt class="text-gray-500 w-16">Phone</dt><dd class="text-gray-900 dark:text-white">{{@client.phone}}</dd></div>
+        {{/if}}
+        {{#if @client.address}}
+          <div class="flex gap-2"><dt class="text-gray-500 w-16">Address</dt><dd class="text-gray-900 dark:text-white">{{@client.address}}</dd></div>
+        {{/if}}
+        {{#if @client.notes}}
+          <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+            <dt class="text-gray-500 mb-1">Notes</dt>
+            <dd class="text-gray-900 dark:text-white">{{@client.notes}}</dd>
+          </div>
+        {{/if}}
+      </dl>
+    </div>
+
+    {{! Events }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Events</h3>
+        <LinkTo @route="crm.events.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ New</LinkTo>
+      </div>
+      {{#if @client.events.length}}
+        <ul class="space-y-2">
+          {{#each @client.events as |event|}}
+            <li>
+              <LinkTo @route="crm.events.show" @model={{event.id}} class="flex items-center justify-between text-sm hover:bg-gray-50 dark:hover:bg-gray-700 -mx-2 px-2 py-1 rounded">
+                <span class="text-gray-900 dark:text-white">{{event.name}}</span>
+                <Crm::Ui::StatusBadge @colorClass={{event.statusColor}} @label={{event.status}} />
+              </LinkTo>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400">No events yet</p>
+      {{/if}}
+    </div>
+  </div>
+
+  {{! Invoices }}
+  {{#if @client.invoices.length}}
+    <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Invoices</h3>
+      <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+        {{#each @client.invoices as |inv|}}
+          <li class="py-2 flex items-center justify-between text-sm">
+            <LinkTo @route="crm.invoices.show" @model={{inv.id}} class="text-indigo-600 hover:text-indigo-700">{{inv.invoiceNumber}}</LinkTo>
+            <div class="flex items-center gap-3">
+              <span class="text-gray-900 dark:text-white font-medium">{{format-currency inv.total}}</span>
+              <Crm::Ui::StatusBadge @colorClass={{inv.statusColor}} @label={{inv.status}} />
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+</div>

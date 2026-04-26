@@ -1,0 +1,25 @@
+<div class="flex justify-between items-start mb-8">
+  <div class="flex items-center gap-4">
+    {{#if this.crmSettings.logoDataUrl}}
+      <img src={{this.crmSettings.logoDataUrl}} alt="{{this.crmSettings.companyName}} logo" class="h-16 w-auto object-contain" />
+    {{/if}}
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">{{this.crmSettings.companyName}}</h1>
+      {{#if this.crmSettings.companyAddress}}
+        <p class="text-sm text-gray-600">{{this.crmSettings.companyAddress}}</p>
+      {{/if}}
+      {{#if this.crmSettings.companyPhone}}
+        <p class="text-sm text-gray-600">{{this.crmSettings.companyPhone}}</p>
+      {{/if}}
+      {{#if this.crmSettings.companyEmail}}
+        <p class="text-sm text-gray-600">{{this.crmSettings.companyEmail}}</p>
+      {{/if}}
+    </div>
+  </div>
+  <div class="text-right">
+    <h2 class="text-xl font-semibold text-gray-700">{{@documentTitle}}</h2>
+    {{#if @documentNumber}}
+      <p class="text-gray-500 text-sm">#{{@documentNumber}}</p>
+    {{/if}}
+  </div>
+</div>

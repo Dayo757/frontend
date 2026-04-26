@@ -1,0 +1,63 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Clients">
+    <:action>
+      <LinkTo @route="crm.clients.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        + New Client
+      </LinkTo>
+    </:action>
+  </Crm::Ui::SectionHeader>
+
+  {{! Search }}
+  <div class="mb-4">
+    <input
+      type="text"
+      placeholder="Search clients..."
+      value={{this.searchQuery}}
+      {{on "input" (fn (mut this.searchQuery) value="target.value")}}
+      class="w-full max-w-sm px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
+
+  {{#if this.filteredClients.length}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Events</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          {{#each this.filteredClients as |client|}}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <LinkTo @route="crm.clients.show" @model={{client.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                  {{client.fullName}}
+                </LinkTo>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{or client.company "—"}}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{or client.email "—"}}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{or client.phone "—"}}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{client.events.length}}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <LinkTo @route="crm.clients.edit" @model={{client.id}} class="text-gray-400 hover:text-indigo-600 mr-3">Edit</LinkTo>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <Crm::Ui::EmptyState @title="No clients yet" @description="Add your first client to get started.">
+      <:action>
+        <LinkTo @route="crm.clients.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+          + New Client
+        </LinkTo>
+      </:action>
+    </Crm::Ui::EmptyState>
+  {{/if}}
+</div>
