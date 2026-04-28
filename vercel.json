@@ -2,7 +2,6 @@
   "buildCommand": "npm run tailwind:build && npm run build:ember",
   "installCommand": "npm install --no-fund --no-audit --legacy-peer-deps",
   "outputDirectory": "dist",
-  "nodeVersion": "20.x",
   "redirects": [
     { "source": "/", "destination": "/crm/dashboard" }
   ],
