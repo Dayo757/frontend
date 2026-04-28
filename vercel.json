@@ -1,6 +1,6 @@
 {
   "buildCommand": "scripts/build-vercel-output.sh",
-  "installCommand": "npm install --no-fund --no-audit",
+  "installCommand": "npm install --no-fund --no-audit --legacy-peer-deps",
   "redirects": [
     { "source": "/package.json", "destination": "/404" },
     { "source": "/", "destination": "/crm/dashboard" }
