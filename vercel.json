@@ -1,17 +1,14 @@
 {
-  "buildCommand": "scripts/build-vercel-output.sh",
+  "buildCommand": "npm run tailwind:build && npm run build:ember",
   "installCommand": "npm install --no-fund --no-audit --legacy-peer-deps",
+  "outputDirectory": "dist",
   "nodeVersion": "20.x",
   "redirects": [
-    { "source": "/package.json", "destination": "/404" },
     { "source": "/", "destination": "/crm/dashboard" }
   ],
   "rewrites": [
-    { "source": "/:path*", "destination": "/_empty.html" }
+    { "source": "/:path*", "destination": "/index.html" }
   ],
-  "github": {
-    "silent": true
-  },
   "headers": [
     {
       "source": "/assets/([a-fA-F0-9]{20}).(svg|jpg|png)",
