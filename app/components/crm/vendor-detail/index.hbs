@@ -1,0 +1,48 @@
+<div class="p-8 max-w-3xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <LinkTo @route="crm.vendors" class="hover:text-indigo-600">Vendors</LinkTo>
+        <span>/</span>
+        <span class="text-gray-900 dark:text-white">{{@vendor.name}}</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{@vendor.name}}</h1>
+      <p class="text-indigo-600 text-sm mt-1">{{@vendor.serviceTypeLabel}}</p>
+    </div>
+    <LinkTo @route="crm.vendors.edit" @model={{@vendor.id}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+      Edit
+    </LinkTo>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Contact Info</h3>
+      <dl class="space-y-2 text-sm">
+        {{#if @vendor.contactName}}<div class="flex gap-2"><dt class="text-gray-500 w-16">Contact</dt><dd class="text-gray-900 dark:text-white">{{@vendor.contactName}}</dd></div>{{/if}}
+        {{#if @vendor.email}}<div class="flex gap-2"><dt class="text-gray-500 w-16">Email</dt><dd class="text-gray-900 dark:text-white">{{@vendor.email}}</dd></div>{{/if}}
+        {{#if @vendor.phone}}<div class="flex gap-2"><dt class="text-gray-500 w-16">Phone</dt><dd class="text-gray-900 dark:text-white">{{@vendor.phone}}</dd></div>{{/if}}
+        {{#if @vendor.website}}<div class="flex gap-2"><dt class="text-gray-500 w-16">Website</dt><dd><a href={{@vendor.website}} target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-700 truncate">{{@vendor.website}}</a></dd></div>{{/if}}
+        {{#if @vendor.defaultFee}}<div class="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700"><dt class="text-gray-500 w-16">Rate</dt><dd class="text-gray-900 dark:text-white font-medium">{{@vendor.defaultFeeDisplay}}</dd></div>{{/if}}
+        {{#if @vendor.notes}}<div class="pt-2 border-t border-gray-100 dark:border-gray-700"><dt class="text-gray-500 mb-1">Notes</dt><dd class="text-gray-900 dark:text-white">{{@vendor.notes}}</dd></div>{{/if}}
+      </dl>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Assigned Events ({{this.assignedEvents.length}})</h3>
+      {{#if this.assignedEvents.length}}
+        <ul class="space-y-2">
+          {{#each this.assignedEvents as |event|}}
+            <li>
+              <LinkTo @route="crm.events.show" @model={{event.id}} class="flex items-center justify-between text-sm hover:bg-gray-50 dark:hover:bg-gray-700 -mx-2 px-2 py-1 rounded">
+                <span class="text-gray-900 dark:text-white">{{event.name}}</span>
+                <Crm::Ui::StatusBadge @colorClass={{event.statusColor}} @label={{event.status}} />
+              </LinkTo>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400">Not assigned to any events yet</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Documents" />
+  <p class="text-sm text-gray-500 -mt-4 mb-6">All saved contracts and invoices in one place.</p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    {{! Contracts }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Contracts ({{this.sortedContracts.length}})</h3>
+        <LinkTo @route="crm.contracts.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ New</LinkTo>
+      </div>
+      {{#if this.sortedContracts.length}}
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+          {{#each this.sortedContracts as |contract|}}
+            <li class="px-6 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700">
+              <div>
+                <LinkTo @route="crm.contracts.show" @model={{contract.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                  {{contract.title}}
+                </LinkTo>
+                <p class="text-xs text-gray-400 mt-0.5">
+                  {{contract.contractTypeLabel}}
+                  {{#if contract.createdAt}} · {{date-format contract.createdAt format="PP"}}{{/if}}
+                </p>
+              </div>
+              <Crm::Ui::StatusBadge @colorClass={{contract.statusColor}} @label={{contract.status}} />
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-6 py-8 text-sm text-gray-400 text-center">No contracts yet</p>
+      {{/if}}
+    </div>
+
+    {{! Invoices }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Invoices ({{this.sortedInvoices.length}})</h3>
+        <LinkTo @route="crm.invoices.new" class="text-xs text-indigo-600 hover:text-indigo-700">+ New</LinkTo>
+      </div>
+      {{#if this.sortedInvoices.length}}
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+          {{#each this.sortedInvoices as |inv|}}
+            <li class="px-6 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700">
+              <div>
+                <LinkTo @route="crm.invoices.show" @model={{inv.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                  {{inv.invoiceNumber}}
+                </LinkTo>
+                <p class="text-xs text-gray-400 mt-0.5">
+                  {{#if inv.client.id}}{{inv.client.fullName}} · {{/if}}
+                  {{#if inv.createdAt}}{{date-format inv.createdAt format="PP"}}{{/if}}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-900 dark:text-white">{{format-currency inv.total}}</span>
+                <Crm::Ui::StatusBadge @colorClass={{inv.statusColor}} @label={{inv.status}} />
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-6 py-8 text-sm text-gray-400 text-center">No invoices yet</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+/* CRM sidebar navigation link base style */
+.crm-nav-link {
+  @apply flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150;
+}
+
+.crm-nav-link.dark\:text-gray-300 {
+  @apply dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white;
+}
+
+/* Active state for nav links */
+.crm-nav-link-active,
+.crm-nav-link.active {
+  @apply bg-indigo-50 text-indigo-700 hover:bg-indigo-50;
+}
+
+/* Dark mode nav */
+@media (prefers-color-scheme: dark) {
+  .crm-nav-link {
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white;
+  }
+  .crm-nav-link-active {
+    @apply bg-indigo-900 text-indigo-300 hover:bg-indigo-900;
+  }
+}
+
+/* Print: hide everything except the printable region */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .crm-print-hide {
+    display: none !important;
+  }
+
+  .crm-print-show {
+    display: block !important;
+  }
+
+  @page {
+    margin: 1cm 1.5cm;
+  }
+}

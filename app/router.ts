@@ -100,6 +100,41 @@ Router.map(function () {
 
   this.route('welcome');
 
+  this.route('crm', function () {
+    this.route('dashboard');
+    this.route('clients', function () {
+      this.route('new');
+      this.route('show', { path: '/:client_id' });
+      this.route('edit', { path: '/:client_id/edit' });
+    });
+    this.route('events', function () {
+      this.route('new');
+      this.route('show', { path: '/:event_id' });
+      this.route('edit', { path: '/:event_id/edit' });
+    });
+    this.route('vendors', function () {
+      this.route('new');
+      this.route('show', { path: '/:vendor_id' });
+      this.route('edit', { path: '/:vendor_id/edit' });
+    });
+    this.route('expenses', function () {
+      this.route('new');
+    });
+    this.route('invoices', function () {
+      this.route('new');
+      this.route('show', { path: '/:invoice_id' });
+      this.route('edit', { path: '/:invoice_id/edit' });
+    });
+    this.route('contracts', function () {
+      this.route('new');
+      this.route('show', { path: '/:contract_id' });
+      this.route('edit', { path: '/:contract_id/edit' });
+    });
+    this.route('documents');
+    this.route('settings');
+    this.route('integrations');
+  });
+
   this.route('not-found', { path: '/*path' }); // Catch-all (TODO: Add dark mode support)
   this.route('not-found', { path: '/404' }); // Allow redirecting to this route
 

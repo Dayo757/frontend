@@ -8,6 +8,7 @@
 @import 'pages/affiliate-link-page.css';
 @import 'pages/code-walkthrough-page.css';
 @import 'pages/course-stage-solution-page.css';
+@import 'pages/crm.css';
 
 /* purgecss start ignore */
 @import '@typeform/embed/build/css/popup.css';

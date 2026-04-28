@@ -1,0 +1,91 @@
+<div class="p-8 max-w-2xl">
+  <Crm::Ui::SectionHeader @title={{if @isNew "New Vendor" "Edit Vendor"}} />
+
+  <form {{on "submit" this.handleSave}} class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-5">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Business Name *</label>
+        <input type="text" value={{@vendor.name}} {{on "input" (fn (mut @vendor.name) value="target.value")}} required
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Type</label>
+        <select value={{@vendor.serviceType}} {{on "change" (fn (mut @vendor.serviceType) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="dj">DJ</option>
+          <option value="photographer">Photographer</option>
+          <option value="videographer">Videographer</option>
+          <option value="caterer">Caterer</option>
+          <option value="florist">Florist</option>
+          <option value="venue">Venue</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contact Name</label>
+      <input type="text" value={{@vendor.contactName}} {{on "input" (fn (mut @vendor.contactName) value="target.value")}}
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+        <input type="email" value={{@vendor.email}} {{on "input" (fn (mut @vendor.email) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+        <input type="tel" value={{@vendor.phone}} {{on "input" (fn (mut @vendor.phone) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
+      <input type="url" value={{@vendor.website}} {{on "input" (fn (mut @vendor.website) value="target.value")}}
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Fee ($)</label>
+        <input type="number" value={{this.feeInDollars}} {{on "change" this.handleFeeChange}} min="0" step="0.01"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fee Type</label>
+        <select value={{@vendor.feeType}} {{on "change" (fn (mut @vendor.feeType) value="target.value")}}
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="flat">Flat Rate</option>
+          <option value="hourly">Per Hour</option>
+          <option value="per-head">Per Head</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+      <textarea value={{@vendor.notes}} {{on "input" (fn (mut @vendor.notes) value="target.value")}} rows="3"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+    </div>
+
+    <div class="flex items-center justify-between pt-2">
+      <div class="flex gap-3">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+          {{if @isNew "Create Vendor" "Save Changes"}}
+        </button>
+        <button type="button" {{on "click" this.handleCancel}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          Cancel
+        </button>
+      </div>
+      {{#unless @isNew}}
+        <button type="button" {{on "click" this.handleDelete}} class="px-4 py-2 text-red-600 text-sm font-medium hover:text-red-700">
+          Delete Vendor
+        </button>
+      {{/unless}}
+    </div>
+  </form>
+</div>

@@ -1,0 +1,94 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Dashboard" />
+
+  {{! KPI Cards }}
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <Crm::Ui::StatCard @label="Total Revenue (Paid)" @value={{format-currency this.totalRevenueCents}} @color="green" />
+    <Crm::Ui::StatCard @label="Pending Revenue" @value={{format-currency this.pendingRevenueCents}} @color="yellow" />
+    <Crm::Ui::StatCard @label="Total Expenses" @value={{format-currency this.totalExpensesCents}} @color="red" />
+    <Crm::Ui::StatCard @label="Total Clients" @value={{@model.clients.length}} @color="blue" />
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    {{! Upcoming Events }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Upcoming Events (next 30 days)</h3>
+        <LinkTo @route="crm.events" class="text-xs text-indigo-600 hover:text-indigo-700">View all →</LinkTo>
+      </div>
+      {{#if this.upcomingEvents.length}}
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+          {{#each this.upcomingEvents as |event|}}
+            <li class="py-3 flex items-center justify-between">
+              <div>
+                <LinkTo @route="crm.events.show" @model={{event.id}} class="text-sm font-medium text-gray-900 dark:text-white hover:text-indigo-600">
+                  {{event.name}}
+                </LinkTo>
+                {{#if event.eventDate}}
+                  <p class="text-xs text-gray-400 mt-0.5">{{date-format event.eventDate format="PPP"}}</p>
+                {{/if}}
+                {{#if event.venue}}
+                  <p class="text-xs text-gray-400">{{event.venue}}</p>
+                {{/if}}
+              </div>
+              <Crm::Ui::StatusBadge @colorClass={{event.statusColor}} @label={{event.status}} />
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400 py-4 text-center">No upcoming events in the next 30 days</p>
+      {{/if}}
+    </div>
+
+    {{! Pending Invoices }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-900 dark:text-white">Pending Invoices</h3>
+        <LinkTo @route="crm.invoices" class="text-xs text-indigo-600 hover:text-indigo-700">View all →</LinkTo>
+      </div>
+      {{#if this.pendingInvoices.length}}
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+          {{#each this.pendingInvoices as |inv|}}
+            <li class="py-3 flex items-center justify-between">
+              <div>
+                <LinkTo @route="crm.invoices.show" @model={{inv.id}} class="text-sm font-medium text-gray-900 dark:text-white hover:text-indigo-600">
+                  {{inv.invoiceNumber}}
+                </LinkTo>
+                {{#if inv.client.id}}
+                  <p class="text-xs text-gray-400 mt-0.5">{{inv.client.fullName}}</p>
+                {{/if}}
+                {{#if inv.dueDate}}
+                  <p class="text-xs {{if inv.isOverdue "text-red-500 font-medium" "text-gray-400"}}">
+                    Due {{date-from-now inv.dueDate}}
+                  </p>
+                {{/if}}
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{format-currency inv.total}}</p>
+                <Crm::Ui::StatusBadge @colorClass={{inv.statusColor}} @label={{inv.status}} />
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-sm text-gray-400 py-4 text-center">No pending invoices</p>
+      {{/if}}
+    </div>
+  </div>
+
+  {{! Quick links }}
+  <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <LinkTo @route="crm.events.new" class="flex items-center justify-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+      + New Event
+    </LinkTo>
+    <LinkTo @route="crm.invoices.new" class="flex items-center justify-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+      + New Invoice
+    </LinkTo>
+    <LinkTo @route="crm.contracts.new" class="flex items-center justify-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+      + New Contract
+    </LinkTo>
+    <LinkTo @route="crm.expenses.new" class="flex items-center justify-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-indigo-300 hover:text-indigo-600 transition-colors">
+      + Log Expense
+    </LinkTo>
+  </div>
+</div>

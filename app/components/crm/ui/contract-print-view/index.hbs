@@ -1,0 +1,42 @@
+{{! Screen: print button }}
+<button type="button" {{on "click" this.handlePrint}} class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors print:hidden">
+  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+  Print / Save PDF
+</button>
+
+{{! Print-only contract layout }}
+<div class="hidden print:block bg-white p-0 text-gray-900" style="font-family: sans-serif;">
+  <Crm::Ui::PrintableHeader @documentTitle="CONTRACT" @documentNumber={{@contract.title}} />
+
+  <div style="margin-bottom:1.5rem; font-size:0.875rem; color:#374151;">
+    {{#if @contract.event.id}}<p><strong>Event:</strong> {{@contract.event.name}}</p>{{/if}}
+    {{#if @contract.client.id}}<p><strong>Client:</strong> {{@contract.client.fullName}}</p>{{/if}}
+    {{#if @contract.vendor.id}}<p><strong>Vendor:</strong> {{@contract.vendor.name}}</p>{{/if}}
+    {{#if @contract.createdAt}}<p><strong>Date:</strong> {{date-format @contract.createdAt format="PP"}}</p>{{/if}}
+    {{#if @contract.expiresAt}}<p><strong>Expires:</strong> {{date-format @contract.expiresAt format="PP"}}</p>{{/if}}
+  </div>
+
+  <hr style="margin-bottom:1.5rem; border-color:#e5e7eb;" />
+
+  <div class="prose prose-sm max-w-none" style="font-size:0.875rem; line-height:1.6; color:#374151;">
+    {{#if @contract.content}}
+      {{markdown-to-html @contract.content}}
+    {{/if}}
+  </div>
+
+  {{! Signature lines }}
+  <div style="margin-top:3rem; display:grid; grid-template-columns:1fr 1fr; gap:3rem; font-size:0.875rem;">
+    <div>
+      <div style="border-top:1px solid #374151; padding-top:0.5rem;">
+        <p style="margin:0; color:#6b7280;">Authorized Signature</p>
+        <p style="margin:0.25rem 0 0; font-weight:600;">Mob Madness</p>
+      </div>
+    </div>
+    <div>
+      <div style="border-top:1px solid #374151; padding-top:0.5rem;">
+        <p style="margin:0; color:#6b7280;">{{if @contract.vendor.id "Vendor Signature" "Client Signature"}}</p>
+        <p style="margin:0.25rem 0 0; font-weight:600;">{{or @contract.vendor.name @contract.client.fullName ""}}</p>
+      </div>
+    </div>
+  </div>
+</div>

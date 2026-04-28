@@ -1,0 +1,85 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Events">
+    <:action>
+      <LinkTo @route="crm.events.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        + New Event
+      </LinkTo>
+    </:action>
+  </Crm::Ui::SectionHeader>
+
+  <div class="flex gap-3 mb-4">
+    <select value={{this.statusFilter}} {{on "change" (fn (mut this.statusFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Statuses</option>
+      <option value="enquiry">Enquiry</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <select value={{this.typeFilter}} {{on "change" (fn (mut this.typeFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Types</option>
+      <option value="wedding">Wedding</option>
+      <option value="corporate">Corporate</option>
+      <option value="birthday">Birthday</option>
+      <option value="party">Party</option>
+      <option value="concert">Concert</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  {{#if this.filteredEvents.length}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          {{#each this.filteredEvents as |event|}}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <td class="px-6 py-4">
+                <LinkTo @route="crm.events.show" @model={{event.id}} class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                  {{event.name}}
+                </LinkTo>
+                <p class="text-xs text-gray-400 capitalize">{{event.eventType}}</p>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{#if event.eventDate}}{{date-format event.eventDate format="PP"}}{{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{or event.venue "—"}}</td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                {{#if event.client.id}}
+                  <LinkTo @route="crm.clients.show" @model={{event.client.id}} class="text-indigo-600 hover:text-indigo-700">
+                    {{event.client.fullName}}
+                  </LinkTo>
+                {{else}}—{{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <Crm::Ui::StatusBadge @colorClass={{event.statusColor}} @label={{event.status}} />
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <LinkTo @route="crm.events.edit" @model={{event.id}} class="text-gray-400 hover:text-indigo-600">Edit</LinkTo>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <Crm::Ui::EmptyState @title="No events yet" @description="Create your first event to get started.">
+      <:action>
+        <LinkTo @route="crm.events.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+          + New Event
+        </LinkTo>
+      </:action>
+    </Crm::Ui::EmptyState>
+  {{/if}}
+</div>

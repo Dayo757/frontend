@@ -1,0 +1,136 @@
+<div class="p-8 max-w-3xl">
+  <Crm::Ui::SectionHeader @title={{if @isNew "New Invoice" "Edit Invoice"}} />
+
+  <form {{on "submit" this.handleSave}} class="space-y-6">
+    {{! Header info }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Number</label>
+          <input type="text" value={{@invoice.invoiceNumber}} {{on "input" (fn (mut @invoice.invoiceNumber) value="target.value")}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+          <select value={{@invoice.status}} {{on "change" (fn (mut @invoice.status) value="target.value")}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client</label>
+          <select {{on "change" this.handleClientChange}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">— Select Client —</option>
+            {{#each this.allClients as |client|}}
+              <option value={{client.id}} selected={{eq @invoice.client.id client.id}}>{{client.fullName}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event</label>
+          <select {{on "change" this.handleEventChange}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">— Select Event —</option>
+            {{#each this.allEvents as |event|}}
+              <option value={{event.id}} selected={{eq @invoice.event.id event.id}}>{{event.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Issue Date</label>
+          <input type="date" value={{this.issueDateString}} {{on "change" this.handleIssueDateChange}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
+          <input type="date" value={{this.dueDateString}} {{on "change" this.handleDueDateChange}}
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+      </div>
+    </div>
+
+    {{! Line items }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Line Items</h3>
+      <div class="space-y-3">
+        {{#each this.lineItems as |item idx|}}
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <div class="col-span-6">
+              <input type="text" placeholder="Description" value={{item.description}} {{on "input" (fn this.updateLineItem idx "description")}}
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div class="col-span-2">
+              <input type="number" placeholder="Qty" value={{item.quantity}} {{on "input" (fn this.updateLineItem idx "quantity")}} min="1" step="1"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center" />
+            </div>
+            <div class="col-span-3">
+              <input type="number" placeholder="Unit price" value={{item.unitPrice}} {{on "input" (fn this.updateLineItem idx "unitPrice")}} min="0" step="0.01"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div class="col-span-1 flex justify-end">
+              <button type="button" {{on "click" (fn this.removeLineItem idx)}} class="text-red-400 hover:text-red-600 text-lg leading-none">×</button>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+      <button type="button" {{on "click" this.addLineItem}} class="mt-3 text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+        + Add Line Item
+      </button>
+
+      {{! Totals }}
+      <div class="mt-6 border-t border-gray-200 dark:border-gray-600 pt-4 space-y-2">
+        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+          <span>Subtotal</span>
+          <span>{{format-currency this.subtotalCents}}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+          <label class="flex items-center gap-2">
+            Tax Rate (%)
+            <input type="number" value={{@invoice.taxRate}} {{on "input" (fn (mut @invoice.taxRate) value="target.valueAsNumber")}} min="0" max="100" step="0.1"
+              class="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+          </label>
+          <span>{{format-currency this.taxAmountCents}}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+          <label class="flex items-center gap-2">
+            Discount ($)
+            <input type="number" value={{this.discountInDollars}} {{on "change" this.handleDiscountChange}} min="0" step="0.01"
+              class="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+          </label>
+          <span class="text-red-500">-{{format-currency @invoice.discountAmount}}</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2">
+          <span>Total</span>
+          <span>{{format-currency this.totalCents}}</span>
+        </div>
+      </div>
+    </div>
+
+    {{! Notes }}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes / Payment Terms</label>
+      <textarea value={{@invoice.notes}} {{on "input" (fn (mut @invoice.notes) value="target.value")}} rows="3"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        {{if @isNew "Create Invoice" "Save Changes"}}
+      </button>
+      <button type="button" {{on "click" this.handleCancel}} class="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

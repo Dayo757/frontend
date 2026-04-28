@@ -1,0 +1,59 @@
+<div class="p-8">
+  <Crm::Ui::SectionHeader @title="Vendors & DJs">
+    <:action>
+      <LinkTo @route="crm.vendors.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+        + New Vendor
+      </LinkTo>
+    </:action>
+  </Crm::Ui::SectionHeader>
+
+  <div class="mb-4">
+    <select value={{this.typeFilter}} {{on "change" (fn (mut this.typeFilter) value="target.value")}}
+      class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">All Types</option>
+      <option value="dj">DJ</option>
+      <option value="photographer">Photographer</option>
+      <option value="videographer">Videographer</option>
+      <option value="caterer">Caterer</option>
+      <option value="florist">Florist</option>
+      <option value="venue">Venue</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  {{#if this.filteredVendors.length}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {{#each this.filteredVendors as |vendor|}}
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:border-indigo-300 transition-colors">
+          <div class="flex items-start justify-between">
+            <div>
+              <LinkTo @route="crm.vendors.show" @model={{vendor.id}} class="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600">
+                {{vendor.name}}
+              </LinkTo>
+              <p class="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">{{vendor.serviceTypeLabel}}</p>
+            </div>
+            <LinkTo @route="crm.vendors.edit" @model={{vendor.id}} class="text-xs text-gray-400 hover:text-indigo-600">Edit</LinkTo>
+          </div>
+          {{#if vendor.contactName}}
+            <p class="mt-2 text-xs text-gray-500">{{vendor.contactName}}</p>
+          {{/if}}
+          {{#if vendor.email}}
+            <p class="text-xs text-gray-500">{{vendor.email}}</p>
+          {{/if}}
+          {{#if vendor.defaultFee}}
+            <p class="mt-2 text-xs font-medium text-gray-700 dark:text-gray-300">{{vendor.defaultFeeDisplay}}</p>
+          {{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <Crm::Ui::EmptyState @title="No vendors yet" @description="Add DJs, photographers, caterers and other service providers.">
+      <:action>
+        <LinkTo @route="crm.vendors.new" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+          + New Vendor
+        </LinkTo>
+      </:action>
+    </Crm::Ui::EmptyState>
+  {{/if}}
+</div>
