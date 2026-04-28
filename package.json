@@ -114,7 +114,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
     "ember-animated": "~2.1.0",
-    "ember-api-actions": "^6.0.0",
+    "ember-api-actions": "*",
     "ember-auto-import": "^2.10.0",
     "ember-autoresize-modifier": "^0.7.0",
     "ember-basic-dropdown": "^8.4.0",
